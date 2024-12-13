@@ -12,6 +12,7 @@ import { swaggerDocument } from './config/swagger';
 
 // Rutas
 import userRoutes from './infrastructure/server/express/routes/UserRoutes';
+import projectRoutes from './infrastructure/server/express/routes/ProjectRoutes';
 
 // Middlewares
 import errorHandlingMiddleware from './infrastructure/server/express/middleware/ErrorHandlingMiddleware';
@@ -62,6 +63,7 @@ const connectToDatabase = (logger: winston.Logger): Promise<void> => {
 
 const initializeRoutes = (app: Application): void => {
   app.use('/api/users', userRoutes);
+  app.use('/api/projects', projectRoutes);
 };
 
 const setupSwagger = (app: Application): void => {
