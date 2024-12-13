@@ -8,10 +8,10 @@ import winston from 'winston';
 
 // Configuraciones
 import { env } from './config/environment';
-import swaggerDocument from './config/swagger';
+import { swaggerDocument } from './config/swagger';
 
 // Rutas
-
+import userRoutes from './infrastructure/server/express/routes/UserRoutes';
 
 // Middlewares
 import errorHandlingMiddleware from './infrastructure/server/express/middleware/ErrorHandlingMiddleware';
@@ -61,7 +61,7 @@ const connectToDatabase = (logger: winston.Logger): Promise<void> => {
 };
 
 const initializeRoutes = (app: Application): void => {
-
+  app.use('/api/users', userRoutes);
 };
 
 const setupSwagger = (app: Application): void => {
@@ -93,8 +93,6 @@ const startServer = (app: Application, logger: winston.Logger): void => {
     logger.info(`Servidor corriendo en puerto ${port}`);
   });
 };
-
-
 
 // Crear instancia de la aplicación
 const { app, logger } = createApp();
