@@ -1,3 +1,6 @@
 node_modules
 .env
 dist
+result.txt
+combined.log
+error.log
