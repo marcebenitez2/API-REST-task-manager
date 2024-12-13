@@ -62,4 +62,14 @@ export class TaskService {
   ): Promise<ITask | null> {
     return this.taskRepository.assignTaskToUser(taskId, userId);
   }
+
+  // Buscar tareas por nombre o descripción
+  async searchTasks(query: string): Promise<ITask[]> {
+    return this.taskRepository.searchTasks(query);
+  }
+
+  // Filtrar tareas por estado
+  async getTasksByStatus(status: TaskStatus): Promise<ITask[]> {
+    return this.taskRepository.getTasksByStatus(status);
+  }
 }

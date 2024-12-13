@@ -51,4 +51,14 @@ router.post('/:taskId/assign', authenticateToken, (req, res, next) =>
   taskController.assignTask(req, res).catch(next)
 );
 
+// Ruta para buscar tareas por nombre o descripcion
+router.get('/search', authenticateToken, (req, res, next) =>
+  taskController.searchTasks(req, res, next).catch(next)
+);
+
+// Ruta para filtrar por estado de tareas
+router.get('/status/:status', authenticateToken, (req, res, next) =>
+  taskController.getTasksByStatus(req, res).catch(next)
+);
+
 export default router;

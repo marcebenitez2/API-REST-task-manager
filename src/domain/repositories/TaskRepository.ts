@@ -46,4 +46,17 @@ export class TaskRepository extends GenericRepository<ITask> {
       { new: true }
     );
   }
+
+  async searchTasks(searchTerm: string): Promise<ITask[]> {
+    return this.model.find({
+      $or: [
+        { title: { $regex: searchTerm, $options: 'i' } },
+        { description: { $regex: searchTerm, $options: 'i' } },
+      ],
+    });
+  }
+
+  async getTasksByStatus(status: TaskStatus): Promise<ITask[]> {
+    return this.model.find({ status });
+  }
 }
