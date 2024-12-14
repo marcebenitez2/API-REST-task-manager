@@ -51,6 +51,7 @@ Esta es una API completa de Gestión de Tareas desarrollada con Node.js, TypeScr
    ```
     MONGODB_URI=mongodb://localhost:27017/task_management
     JWT_SECRET=mysecret
+   SWAGGER_SERVER_URL=http://localhost:3000/api
    ```
 
 ## Estructura del Proyecto
