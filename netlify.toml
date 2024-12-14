@@ -5,11 +5,13 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  NODE_OPTIONS = "--max_old_space_size=4096"
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/index"
+  to = "/.netlify/functions/index.js"
   status = 200
 
 [functions]
   node_bundler = "esbuild"
+  external_node_modules = ["mongoose"]
