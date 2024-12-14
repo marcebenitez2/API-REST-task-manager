@@ -7,3 +7,5 @@ result.txt
 /.git/objects/
 .vscode/
 coverage/
+# Local Netlify folder
+.netlify

@@ -144,8 +144,6 @@ Pasos de Despliegue:
 3. Desplegar en la plataforma elegida
 
 
-
-
 ```
 Api
 ├─ .eslintrc.js
