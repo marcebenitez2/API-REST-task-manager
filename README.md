@@ -144,3 +144,68 @@ Pasos de Despliegue:
 3. Desplegar en la plataforma elegida
 
 
+
+
+```
+Api
+├─ .eslintrc.js
+├─ .gitignore
+├─ .prettierrc
+├─ jest.config.js
+├─ jest.setup.js
+├─ logs
+├─ netlify
+│  └─ functions
+│     └─ index.ts
+├─ netlify.toml
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ src
+│  ├─ application
+│  │  ├─ controllers
+│  │  │  ├─ projectController.ts
+│  │  │  ├─ taskController.ts
+│  │  │  └─ userController.ts
+│  │  ├─ services
+│  │  │  ├─ projectService.ts
+│  │  │  ├─ taskService.ts
+│  │  │  └─ userService.ts
+│  │  └─ validations
+│  │     ├─ projectValidation.ts
+│  │     ├─ taskValidation.ts
+│  │     └─ userValidation.ts
+│  ├─ config
+│  │  ├─ cache.ts
+│  │  ├─ environment.ts
+│  │  ├─ logger.ts
+│  │  └─ swagger.ts
+│  ├─ domain
+│  │  ├─ models
+│  │  │  ├─ project.ts
+│  │  │  ├─ task.ts
+│  │  │  └─ user.ts
+│  │  └─ repositories
+│  │     ├─ GenericRepository.ts
+│  │     ├─ ProjectRepository.ts
+│  │     ├─ TaskRepository.ts
+│  │     └─ UserRepository.ts
+│  ├─ index.ts
+│  ├─ infrastructure
+│  │  └─ server
+│  │     └─ express
+│  │        ├─ middleware
+│  │        │  ├─ AuthMiddleware.ts
+│  │        │  ├─ ErrorHandlingMiddleware.ts
+│  │        │  └─ ValidationMiddleware.ts
+│  │        └─ routes
+│  │           ├─ ProjectRoutes.ts
+│  │           ├─ TaskRoutes.ts
+│  │           └─ UserRoutes.ts
+│  └─ test
+│     ├─ projectController.test.ts
+│     ├─ taskController.test.ts
+│     └─ userController.test.ts
+└─ tsconfig.json
+
+```

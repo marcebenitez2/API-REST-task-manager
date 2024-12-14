@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import serverless from 'serverless-http';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import compression from 'compression';
@@ -19,6 +20,14 @@ import taskRoutes from './infrastructure/server/express/routes/TaskRoutes';
 import errorHandlingMiddleware from './infrastructure/server/express/middleware/ErrorHandlingMiddleware';
 
 const initializeMiddlewares = (app: Application): void => {
+  // CORS para Netlify
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    next();
+  });
+
   // Middlewares de seguridad y rendimiento
   app.use(helmet());
   app.use(compression());
@@ -73,7 +82,7 @@ const initializeErrorHandling = (app: Application): void => {
 };
 
 // Crear instancia de la aplicación
-const createApp = (): { app: Application } => {
+const createApp = (): Application => {
   const app = express();
 
   initializeMiddlewares(app);
@@ -82,19 +91,24 @@ const createApp = (): { app: Application } => {
   setupSwagger(app);
   initializeErrorHandling(app);
 
-  return { app };
+  return app;
 };
 
-const startServer = (app: Application): void => {
+// Crear la aplicación
+const app = createApp();
+
+// Crear handler de serverless de forma explícita
+const serverlessHandler = serverless(app);
+
+// Exportar handler de serverless
+export { serverlessHandler as handler };
+
+// Mantener el servidor local para desarrollo
+if (process.env.NODE_ENV !== 'production') {
   const port = env.PORT || 3000;
   app.listen(port, () => {
     logger.info(`Servidor corriendo en puerto ${port}`);
   });
-};
-
-const { app } = createApp();
-if (process.env.NODE_ENV !== 'test') {
-  startServer(app);
 }
 
 export default app;
