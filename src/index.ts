@@ -6,6 +6,10 @@ import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import logger from './config/logger';
+import dotenv from 'dotenv';
+
+// Cargar variables de entorno
+dotenv.config();
 
 // Configuraciones
 import { env } from './config/environment';
