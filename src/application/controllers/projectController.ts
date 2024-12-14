@@ -22,19 +22,19 @@ export class ProjectController {
     });
   }
 
-  // Obtener TODOS los proyectos
+  // Obtener TODOS los proyectos (con cache)
   async getProjectsAll(req: Request, res: Response) {
-    const projects = await this.projectService.getProjectsAll();
+    const projects = await this.projectService.getProjectsAll(); // El servicio maneja la cache
     res.json(projects);
   }
 
-  // Obtener todos los proyectos de un usuario
+  // Obtener todos los proyectos de un usuario (con cache)
   async getProjects(req: Request, res: Response) {
-    const projects = await this.projectService.getProjectsByUser(req.user!.id);
+    const projects = await this.projectService.getProjectsByUser(req.user!.id); // El servicio maneja la cache
     res.json(projects);
   }
 
-  // Obtener un solo proyecto
+  // Obtener un solo proyecto (se puede cachear si es necesario)
   async getProject(req: Request, res: Response) {
     const { id } = req.params;
     const project = await this.projectService.getProjectById(id);
@@ -42,7 +42,7 @@ export class ProjectController {
     res.json(project);
   }
 
-  // Actualizar un proyecto
+  // Actualizar un proyecto (no necesariamente requiere cache)
   async updateProject(req: Request, res: Response) {
     const { id } = req.params;
     const updatedProject = await this.projectService.updateProject(
@@ -50,18 +50,24 @@ export class ProjectController {
       req.body
     );
 
+    // Limpiar cache si el proyecto fue actualizado (esto depende de tu lógica)
+    // cache.del('allProjects'); // o el cache específico que desees limpiar
+
     res.json({
       message: 'Project updated successfully',
       project: updatedProject,
     });
   }
 
-  // Eliminar un proyecto
+  // Eliminar un proyecto (limpiar caché también)
   async deleteProject(req: Request, res: Response) {
     const { id } = req.params;
 
     try {
       const result = await this.projectService.deleteProjectAndTasks(id);
+
+      // Limpiar el cache correspondiente
+      // cache.del('allProjects'); // Si deseas limpiar el cache de proyectos generales
 
       res.json(result);
     } catch (error) {
@@ -69,7 +75,7 @@ export class ProjectController {
     }
   }
 
-  // Agregar un miembro a un proyecto
+  // Agregar un miembro a un proyecto (limpiar caché si es necesario)
   async addMember(req: Request, res: Response) {
     const { projectId } = req.params;
     const { userId } = req.body;
@@ -79,13 +85,16 @@ export class ProjectController {
       userId
     );
 
+    // Limpiar el cache si es necesario, por ejemplo si los miembros del proyecto se actualizan
+    // cache.del(`projectsByUser:${req.user!.id}`);
+
     res.json({
       message: 'Member added successfully',
       project: updatedProject,
     });
   }
 
-  // Eliminar un miembro de un proyecto
+  // Eliminar un miembro de un proyecto (limpiar caché si es necesario)
   async removeMember(req: Request, res: Response) {
     const { projectId, userId } = req.params;
 
@@ -93,6 +102,9 @@ export class ProjectController {
       projectId,
       userId
     );
+
+    // Limpiar el cache si es necesario
+    // cache.del(`projectsByUser:${req.user!.id}`);
 
     res.json({
       message: 'Member removed successfully',

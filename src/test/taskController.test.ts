@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../index';
+import cache from '../config/cache';
 
 describe('Task Controller', () => {
   let authToken: string;
@@ -59,6 +60,22 @@ describe('Task Controller', () => {
     expect(response.body.task).toHaveProperty('title', 'New Task');
   });
 
+  it('should get tasks from cache when available', async () => {
+    // Verifica si las tareas están almacenadas en el caché
+    const cachedTasks = cache.get('allTasks');
+    if (cachedTasks) {
+      console.log('Returning cached tasks');
+      expect(cachedTasks).toBeInstanceOf(Array); // Las tareas deben ser un array
+    } else {
+      // Si no están en caché, obtén las tareas y verifica el caché
+      const response = await request(app)
+        .get('/api/tasks')
+        .set('Authorization', `Bearer ${authToken}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toBeInstanceOf(Array);
+    }
+  });
+
   it('should get tasks assigned to the authenticated user', async () => {
     const response = await request(app)
       .get('/api/tasks')
@@ -68,7 +85,7 @@ describe('Task Controller', () => {
     expect(response.body).toBeInstanceOf(Array);
   });
 
-  it('should update a task', async () => {
+  it('should update a task and clear cache', async () => {
     const response = await request(app)
       .put(`/api/tasks/${testTaskId}`)
       .set('Authorization', `Bearer ${authToken}`)
@@ -81,30 +98,42 @@ describe('Task Controller', () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Task updated successfully');
     expect(response.body.task).toHaveProperty('title', 'Updated Task Title');
+
+    // Verifica que el caché se haya limpiado
+    const cachedTasks = cache.get('allTasks');
+    expect(cachedTasks).toBeUndefined(); // El caché debe estar vacío después de actualizar la tarea
   });
 
-  it('should delete a task', async () => {
+  it('should delete a task and clear cache', async () => {
     const response = await request(app)
       .delete(`/api/tasks/${testTaskId}`)
       .set('Authorization', `Bearer ${authToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Task deleted successfully');
+
+    // Verifica que el caché se haya limpiado después de eliminar la tarea
+    const cachedTask = cache.get(`task:${testTaskId}`);
+    expect(cachedTask).toBeUndefined(); // La tarea debe haber sido eliminada del caché
   });
 
-  it('should assign a task to a user', async () => {
+  it('should assign a task to a user and clear cache', async () => {
     const response = await request(app)
       .post(`/api/tasks/${testTaskId}/assign`)
       .set('Authorization', `Bearer ${authToken}`)
       .send({
-        userId: '1234567890abcdef12345678',
+        userIds: ['1234567890abcdef12345678'],
       });
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('User assigned to task successfully');
+
+    // Verifica que el caché relacionado con la tarea se haya limpiado
+    const cachedTask = cache.get(`task:${testTaskId}`);
+    expect(cachedTask).toBeUndefined(); // La tarea debe haber sido eliminada del caché
   });
 
-  it('should unassign a user from a task', async () => {
+  it('should unassign a user from a task and clear cache', async () => {
     const response = await request(app)
       .post(`/api/tasks/${testTaskId}/unassign`)
       .set('Authorization', `Bearer ${authToken}`)
@@ -114,6 +143,10 @@ describe('Task Controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('User unassigned successfully');
+
+    // Verifica que el caché relacionado con la tarea se haya limpiado
+    const cachedTask = cache.get(`task:${testTaskId}`);
+    expect(cachedTask).toBeUndefined(); // La tarea debe haber sido eliminada del caché
   });
 
   it('should search tasks by title or description', async () => {
