@@ -4,7 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import winston from 'winston';
+import logger from './config/logger';
 
 // Configuraciones
 import { env } from './config/environment';
@@ -18,21 +18,6 @@ import taskRoutes from './infrastructure/server/express/routes/TaskRoutes';
 // Middlewares
 import errorHandlingMiddleware from './infrastructure/server/express/middleware/ErrorHandlingMiddleware';
 
-const configureLogger = (): winston.Logger => {
-  return winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json()
-    ),
-    transports: [
-      new winston.transports.Console(),
-      new winston.transports.File({ filename: 'error.log', level: 'error' }),
-      new winston.transports.File({ filename: 'combined.log' }),
-    ],
-  });
-};
-
 const initializeMiddlewares = (app: Application): void => {
   // Middlewares de seguridad y rendimiento
   app.use(helmet());
@@ -40,8 +25,8 @@ const initializeMiddlewares = (app: Application): void => {
 
   // Rate limiting
   const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    max: 100, 
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 100, // Limitar cada IP a 100 solicitudes por ventana
   });
   app.use(limiter);
 
@@ -50,7 +35,7 @@ const initializeMiddlewares = (app: Application): void => {
   app.use(express.urlencoded({ extended: true }));
 };
 
-const connectToDatabase = (logger: winston.Logger): Promise<void> => {
+const connectToDatabase = (): Promise<void> => {
   return mongoose
     .connect(env.MONGODB_URI)
     .then(() => {
@@ -70,9 +55,13 @@ const initializeRoutes = (app: Application): void => {
 
 const setupSwagger = (app: Application): void => {
   try {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-      explorer: true
-    }));
+    app.use(
+      '/api-docs',
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerDocument, {
+        explorer: true,
+      })
+    );
     console.log('Swagger UI initialized successfully');
   } catch (error) {
     console.error('Error initializing Swagger UI:', error);
@@ -83,33 +72,29 @@ const initializeErrorHandling = (app: Application): void => {
   app.use(errorHandlingMiddleware);
 };
 
-const createApp = (): { app: Application; logger: winston.Logger } => {
+// Crear instancia de la aplicación
+const createApp = (): { app: Application } => {
   const app = express();
-  const logger = configureLogger();
 
   initializeMiddlewares(app);
-
-  connectToDatabase(logger);
-
+  connectToDatabase();
   initializeRoutes(app);
   setupSwagger(app);
   initializeErrorHandling(app);
 
-  return { app, logger };
+  return { app };
 };
 
-const startServer = (app: Application, logger: winston.Logger): void => {
+const startServer = (app: Application): void => {
   const port = env.PORT || 3000;
   app.listen(port, () => {
     logger.info(`Servidor corriendo en puerto ${port}`);
   });
 };
 
-// Crear instancia de la aplicación
-const { app, logger } = createApp();
-
+const { app } = createApp();
 if (process.env.NODE_ENV !== 'test') {
-  startServer(app, logger);
+  startServer(app);
 }
 
 export default app;

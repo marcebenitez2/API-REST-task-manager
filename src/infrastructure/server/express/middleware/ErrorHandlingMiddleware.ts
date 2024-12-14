@@ -1,35 +1,41 @@
 import { Request, Response, NextFunction } from 'express';
-import winston from 'winston';
+import logger from '../../../../config/logger';
 
 class CustomError extends Error {
-  statusCode: number;
+  public statusCode: number;
+  public isOperational: boolean;
 
-  constructor(message: string, statusCode: number) {
+  constructor(message: string, statusCode: number, isOperational = true) {
     super(message);
     this.statusCode = statusCode;
+    this.isOperational = isOperational;
+
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
 const errorHandlingMiddleware = (
-  err: CustomError,
+  err: CustomError | Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
-  const statusCode = err.statusCode || 500;
-  const logger =
-    winston.createLogger(/* configuración similar a la del index */);
+  const statusCode = err instanceof CustomError ? err.statusCode : 500;
 
-  logger.error(`Error: ${err.message}`, {
+  logger.error({
+    message: err.message,
+    statusCode,
     method: req.method,
-    path: req.path,
+    path: req.originalUrl,
     body: req.body,
+    stack: err.stack,
   });
 
   res.status(statusCode).json({
     status: 'error',
     statusCode,
     message: err.message,
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
   });
 };
 

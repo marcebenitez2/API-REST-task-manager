@@ -6,3 +6,4 @@ result.txt
 *.log
 /.git/objects/
 .vscode/
+coverage/
