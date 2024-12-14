@@ -14,7 +14,7 @@ export class TaskService {
     title: string;
     description?: string;
     project: string;
-    assignedTo?: string;
+    assignedTo?: string[];
     dueDate?: Date;
   }): Promise<ITask> {
     return this.taskRepository.create({
@@ -22,7 +22,7 @@ export class TaskService {
       project: new mongoose.Types.ObjectId(taskData.project),
       status: TaskStatus.PENDING,
       assignedTo: taskData.assignedTo
-        ? new mongoose.Types.ObjectId(taskData.assignedTo)
+        ? taskData.assignedTo.map((id) => new mongoose.Types.ObjectId(id))
         : undefined,
     });
   }
@@ -56,11 +56,25 @@ export class TaskService {
   }
 
   // Asignar una tarea a un usuario
-  async assignTaskToUser(
+  async assignTaskToUsers(
     taskId: string,
-    userId: string
+    userIds: string[]
   ): Promise<ITask | null> {
-    return this.taskRepository.assignTaskToUser(taskId, userId);
+    // Validar que los IDs de usuario sean válidos
+    if (!userIds.every((id) => mongoose.Types.ObjectId.isValid(id))) {
+      throw new Error('Invalid user ID(s)');
+    }
+
+    const updatedTask = await this.taskRepository.assignTaskToUsers(
+      taskId,
+      userIds
+    );
+
+    if (!updatedTask) {
+      throw new Error('Task not found or update failed');
+    }
+
+    return updatedTask;
   }
 
   // Buscar tareas por nombre o descripción

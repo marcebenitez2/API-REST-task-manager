@@ -64,16 +64,32 @@ export class TaskController {
   }
 
   // Ruta para asignar una tarea a un usuario específico
-  async assignTask(req: Request, res: Response) {
-    const { taskId } = req.params;
-    const { userId } = req.body;
+  async assignTask(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { taskId } = req.params;
+      const { userIds } = req.body; // Espera un array de userIds
 
-    const updatedTask = await this.taskService.assignTaskToUser(taskId, userId);
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        res.status(400).json({ message: 'User IDs must be a non-empty array' });
+        return;
+      }
 
-    res.json({
-      message: 'Task assigned successfully',
-      task: updatedTask,
-    });
+      const updatedTask = await this.taskService.assignTaskToUsers(
+        taskId,
+        userIds
+      );
+
+      res.json({
+        message: 'Users assigned successfully',
+        task: updatedTask,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 
   // Ruta para buscar tareas por nombre o descripcion

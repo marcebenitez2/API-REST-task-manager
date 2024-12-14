@@ -39,11 +39,23 @@ export const updateTaskValidation = Joi.object({
 
   assignedTo: Joi.string().optional(),
 
-  dueDate: Joi.date().optional().min('now').messages({
-    'date.min': 'Due date must be in the future',
+  dueDate: Joi.date().optional().messages({
+    'date.base': 'Due date must be a valid date',
   }),
 
   status: Joi.string()
     .valid(...Object.values(TaskStatus))
     .optional(),
+});
+
+export const assignTaskValidation = Joi.object({
+  userIds: Joi.array()
+    .items(Joi.string().pattern(/^[0-9a-fA-F]{24}$/)) // Validar ObjectId
+    .min(1)
+    .required()
+    .messages({
+      'array.base': 'User IDs must be an array',
+      'array.min': 'At least one user ID must be provided',
+      'string.pattern.base': 'Invalid user ID format',
+    }),
 });

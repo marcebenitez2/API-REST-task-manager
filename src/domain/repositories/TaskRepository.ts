@@ -36,13 +36,13 @@ export class TaskRepository extends GenericRepository<ITask> {
     return this.model.find(query);
   }
 
-  async assignTaskToUser(
+  async assignTaskToUsers(
     taskId: string,
-    userId: string
+    userIds: string[]
   ): Promise<ITask | null> {
     return this.model.findByIdAndUpdate(
       taskId,
-      { assignedTo: userId },
+      { $addToSet: { assignedTo: { $each: userIds } } },
       { new: true }
     );
   }
