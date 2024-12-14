@@ -133,15 +133,16 @@ Endpoints:
 
 ## Despliegue
 
-Plataformas Soportadas:
-- Vercel
-- Netlify
-- Heroku
+Fue desplegado en netlify
 
 Pasos de Despliegue:
-1. Configurar variables de entorno
-2. Configurar scripts de construcción
-3. Desplegar en la plataforma elegida
+1. Crear carpeta functions
+2. Configurar el netlify.toml
+3. Permitir conexion desde mongoATLAS
+
+Se probaron todos los endpoints y funcionan correctamente
+![image](https://github.com/user-attachments/assets/bf6ce9f2-8f2b-4cdc-84e3-d96a909d0e10)
+
 
 
 ```
