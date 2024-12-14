@@ -40,8 +40,8 @@ const initializeMiddlewares = (app: Application): void => {
 
   // Rate limiting
   const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100, // Limitar cada IP a 100 solicitudes por ventana
+    windowMs: 15 * 60 * 1000, 
+    max: 100, 
   });
   app.use(limiter);
 
@@ -108,7 +108,6 @@ const startServer = (app: Application, logger: winston.Logger): void => {
 // Crear instancia de la aplicación
 const { app, logger } = createApp();
 
-// Iniciar servidor solo si no estamos en modo test
 if (process.env.NODE_ENV !== 'test') {
   startServer(app, logger);
 }

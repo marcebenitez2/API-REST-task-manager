@@ -3,15 +3,11 @@ import app from '../index';
 
 describe('User Controller', () => {
   let authToken: string;
-
-  // Usar un usuario único para cada prueba
   const testUsername = `testuser_${Date.now()}`;
   const testEmail = `${testUsername}@example.com`;
   const testPassword = 'testpassword';
 
-  // Inicializamos un token de autenticación antes de cada prueba
   beforeAll(async () => {
-    // Registramos un nuevo usuario para obtener un token
     const registerResponse = await request(app)
       .post('/api/users/register')
       .send({
@@ -22,17 +18,15 @@ describe('User Controller', () => {
 
     expect(registerResponse.status).toBe(201);
 
-    // Luego iniciamos sesión con el usuario registrado
     const loginResponse = await request(app).post('/api/users/login').send({
-      email: testEmail, // Cambié de username a email
+      email: testEmail,
       password: testPassword,
     });
 
     expect(loginResponse.status).toBe(200);
-    authToken = loginResponse.body.token; // Guardamos el token
+    authToken = loginResponse.body.token;
   });
 
-  // Test de registro de usuario
   it('should register a new user', async () => {
     const response = await request(app).post('/api/users/register').send({
       username: 'newuser',
@@ -44,10 +38,9 @@ describe('User Controller', () => {
     expect(response.body.message).toBe('User registered successfully');
   });
 
-  // Test de inicio de sesión
   it('should log in an existing user and return a token', async () => {
     const response = await request(app).post('/api/users/login').send({
-      email: testEmail, // Cambié de username a email
+      email: testEmail,
       password: testPassword,
     });
 
@@ -55,7 +48,6 @@ describe('User Controller', () => {
     expect(response.body.token).toBeDefined();
   });
 
-  // Test del perfil del usuario autenticado
   it('should get the profile of the authenticated user', async () => {
     const response = await request(app)
       .get('/api/users/profile')
@@ -63,15 +55,12 @@ describe('User Controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Authenticated user profile');
-
-    // Verificar que el objeto de usuario contenga un id
     expect(response.body.user).toBeDefined();
     expect(response.body.user).toHaveProperty('id');
     expect(typeof response.body.user.id).toBe('string');
     expect(response.body.user.id.length).toBeGreaterThan(0);
   });
 
-  // Test de cierre de sesión
   it('should simulate logging out a user', async () => {
     const response = await request(app)
       .post('/api/users/logout')
