@@ -16,7 +16,13 @@ export const createTaskValidation = Joi.object({
     'any.required': 'Project ID is required',
   }),
 
-  assignedTo: Joi.string().optional(),
+  assignedTo: Joi.array()
+    .items(Joi.string().pattern(/^[0-9a-fA-F]{24}$/)) // Validar ObjectId
+    .optional()
+    .messages({
+      'array.base': 'AssignedTo must be an array of user IDs',
+      'string.pattern.base': 'Each user ID must be a valid ObjectId format',
+    }),
 
   dueDate: Joi.date().optional().messages({
     'date.base': 'Due date must be a valid date',
@@ -37,7 +43,13 @@ export const updateTaskValidation = Joi.object({
     'string.max': 'Description cannot be longer than 500 characters',
   }),
 
-  assignedTo: Joi.string().optional(),
+  assignedTo: Joi.array()
+    .items(Joi.string().pattern(/^[0-9a-fA-F]{24}$/)) // Validar ObjectId
+    .optional()
+    .messages({
+      'array.base': 'AssignedTo must be an array of user IDs',
+      'string.pattern.base': 'Each user ID must be a valid ObjectId format',
+    }),
 
   dueDate: Joi.date().optional().messages({
     'date.base': 'Due date must be a valid date',

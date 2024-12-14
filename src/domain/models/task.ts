@@ -37,4 +37,8 @@ const TaskSchema = new mongoose.Schema({
   dueDate: { type: Date },
 });
 
+TaskSchema.index({ project: 1 });
+TaskSchema.index({ assignedTo: 1 });
+TaskSchema.index({ status: 1 });
+
 export const Task = mongoose.model<ITask>('Task', TaskSchema);

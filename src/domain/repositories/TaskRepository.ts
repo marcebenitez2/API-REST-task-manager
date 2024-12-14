@@ -47,6 +47,17 @@ export class TaskRepository extends GenericRepository<ITask> {
     );
   }
 
+  async unassignUserFromTask(
+    taskId: string,
+    userId: string
+  ): Promise<ITask | null> {
+    return this.model.findByIdAndUpdate(
+      taskId,
+      { $pull: { assignedTo: userId } },
+      { new: true }
+    );
+  }
+
   async searchTasks(searchTerm: string): Promise<ITask[]> {
     return this.model.find({
       $or: [

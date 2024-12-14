@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ProjectController } from '../../../../application/controllers/projectController';
 import { authenticateToken } from '../middleware/AuthMiddleware';
 import { validateRequest } from '../middleware/ValidationMiddleware';
-import { createProjectValidation } from '../../../../application/validations/projectValidation';
+import { createProjectValidation, updateProjectValidation } from '../../../../application/validations/projectValidation';
 
 const router = Router();
 const projectController = new ProjectController();
@@ -34,7 +34,7 @@ router.get('/:id', authenticateToken, (req, res, next) =>
 router.put(
   '/:id',
   authenticateToken,
-  validateRequest(createProjectValidation),
+  validateRequest(updateProjectValidation),
   (req, res, next) => projectController.updateProject(req, res).catch(next)
 );
 
@@ -56,6 +56,8 @@ router.delete(
 );
 
 export default router;
+
+
 /**
  * @openapi
  * /projects:
@@ -88,9 +90,6 @@ export default router;
  *        description: "Unauthorized. JWT token is missing or invalid."
  */
 
-
-
-
 /**
  * @openapi
  * /projects/all:
@@ -108,7 +107,6 @@ export default router;
  *      401:
  *        description: "Unauthorized. JWT token is missing or invalid."
  */
-
 
 /**
  * @openapi
@@ -154,7 +152,6 @@ export default router;
  *      401:
  *        description: "Unauthorized. JWT token is missing or invalid."
  */
-
 
 /**
  * @openapi

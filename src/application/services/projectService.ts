@@ -1,4 +1,5 @@
 import { IProject } from '../../domain/models/project';
+import { Task } from '../../domain/models/task';
 import { ProjectRepository } from '../../domain/repositories/ProjectRepository';
 import { CustomError } from '../../infrastructure/server/express/middleware/ErrorHandlingMiddleware';
 import mongoose from 'mongoose';
@@ -51,9 +52,24 @@ export class ProjectService {
     return this.projectRepository.update(projectId, updateData);
   }
 
-  // Eliminar un proyecto
-  async deleteProject(projectId: string): Promise<IProject | null> {
-    return this.projectRepository.delete(projectId);
+  // Eliminar un proyecto y sus tareas asociadas con transacción
+  async deleteProjectAndTasks(projectId: string): Promise<IProject | null> {
+    try {
+      // Eliminar tareas primero
+      const deleteResult = await Task.deleteMany({ project: projectId });
+      console.log(deleteResult); // Verifica cuántas tareas fueron eliminadas
+
+      // Luego eliminar proyecto
+      const deletedProject = await this.projectRepository.delete(projectId);
+
+      if (!deletedProject) {
+        throw new CustomError('Project not found', 404);
+      }
+
+      return deletedProject;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Agregar un miembro a un proyecto

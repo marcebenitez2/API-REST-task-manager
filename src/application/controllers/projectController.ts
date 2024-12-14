@@ -1,9 +1,5 @@
 import { Request, Response } from 'express';
 import { ProjectService } from '../services/projectService';
-import {
-  createProjectValidation,
-  updateProjectValidation,
-} from '../validations/projectValidation';
 
 export class ProjectController {
   private projectService: ProjectService;
@@ -12,9 +8,7 @@ export class ProjectController {
     this.projectService = new ProjectService();
   }
 
-  // Crear nuevo proyecto
   async createProject(req: Request, res: Response) {
-    // Asumiendo que req.user.id viene del middleware de autenticación
     const projectData = {
       ...req.body,
       owner: req.user!.id,
@@ -65,9 +59,14 @@ export class ProjectController {
   // Eliminar un proyecto
   async deleteProject(req: Request, res: Response) {
     const { id } = req.params;
-    await this.projectService.deleteProject(id);
 
-    res.json({ message: 'Project deleted successfully' });
+    try {
+      const result = await this.projectService.deleteProjectAndTasks(id);
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: (error as any).message });
+    }
   }
 
   // Agregar un miembro a un proyecto

@@ -77,6 +77,14 @@ export class TaskService {
     return updatedTask;
   }
 
+  // Desasignar un usuario de una tarea
+  async unassignUserFromTask(
+    taskId: string,
+    userId: string
+  ): Promise<ITask | null> {
+    return this.taskRepository.unassignUserFromTask(taskId, userId);
+  }
+
   // Buscar tareas por nombre o descripción
   async searchTasks(query: string): Promise<ITask[]> {
     return this.taskRepository.searchTasks(query);

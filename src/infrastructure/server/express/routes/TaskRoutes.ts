@@ -55,6 +55,15 @@ router.post('/:taskId/assign', authenticateToken, async (req, res, next) => {
   }
 });
 
+//Ruta para sacar a alguien que estaba asignado a una tarea
+router.post('/:taskId/unassign', authenticateToken, async (req, res, next) => {
+  try {
+    await taskController.unassignTask(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Ruta para buscar tareas por título o descripción
 router.get('/search', authenticateToken, (req, res, next) =>
   taskController.searchTasks(req, res, next).catch(next)
@@ -72,7 +81,7 @@ export default router;
  * /tasks:
  *  post:
  *    summary: "Create a new task"
- *    description: "Creates a new task and assigns it to a project."
+ *    description: "Creates a new task and assigns it to a project. The task can now be assigned to multiple users."
  *    operationId: "createTask"
  *    tags:
  *      - Tasks
@@ -91,7 +100,10 @@ export default router;
  *              project:
  *                type: string
  *              assignedTo:
- *                type: string
+ *                type: array
+ *                items:
+ *                  type: string
+ *                description: "An array of user IDs to assign the task to."
  *              dueDate:
  *                type: string
  *                format: date
@@ -103,6 +115,46 @@ export default router;
  *        description: "Task created successfully."
  *      400:
  *        description: "Invalid request data."
+ *      401:
+ *        description: "Unauthorized. JWT token is missing or invalid."
+ */
+
+/**
+ * @openapi
+ * /tasks/{taskId}/unassign:
+ *  post:
+ *    summary: "Unassign user from a task"
+ *    description: "Removes a user from the task by unassigning them."
+ *    operationId: "unassignUserFromTask"
+ *    tags:
+ *      - Tasks
+ *    security:
+ *      - bearerAuth: []
+ *    parameters:
+ *      - in: path
+ *        name: taskId
+ *        required: true
+ *        description: "The ID of the task to unassign the user from."
+ *        schema:
+ *          type: string
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              userId:
+ *                type: string
+ *                description: "The user ID to remove from the task."
+ *            required:
+ *              - userId
+ *    responses:
+ *      200:
+ *        description: "User unassigned successfully."
+ *      400:
+ *        description: "User ID is required or invalid."
+ *      404:
+ *        description: "Task or user not found."
  *      401:
  *        description: "Unauthorized. JWT token is missing or invalid."
  */

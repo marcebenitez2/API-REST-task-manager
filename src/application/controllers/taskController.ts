@@ -9,7 +9,7 @@ export class TaskController {
     this.taskService = new TaskService();
   }
 
-  // Ruta para crear una nueva tarea
+  //  para crear una nueva tarea
   async createTask(req: Request, res: Response) {
     const taskData = {
       ...req.body,
@@ -24,19 +24,19 @@ export class TaskController {
     });
   }
 
-  // Ruta para obtener tareas asignadas al usuario autenticado
+  //  para obtener tareas asignadas al usuario autenticado
   async getTasks(req: Request, res: Response) {
     const tasks = await this.taskService.getTasksByUser(req.user!.id);
     res.json(tasks);
   }
 
-  //Ruta para traer TODAS las tareas
+  // para traer TODAS las tareas
   async getAllTasks(req: Request, res: Response) {
     const tasks = await this.taskService.getAllTasks();
     res.json(tasks);
   }
 
-  // Ruta para obtener tareas de un proyecto específico
+  //  para obtener tareas de un proyecto específico
   async getTasksByProject(req: Request, res: Response) {
     const { projectId } = req.params;
     const tasks = await this.taskService.getTasksByProject(projectId);
@@ -44,7 +44,7 @@ export class TaskController {
     res.json(tasks);
   }
 
-  // Ruta para actualizar una tarea existente
+  //  para actualizar una tarea existente
   async updateTask(req: Request, res: Response) {
     const { id } = req.params;
     const updatedTask = await this.taskService.updateTask(id, req.body);
@@ -55,7 +55,7 @@ export class TaskController {
     });
   }
 
-  // Ruta para eliminar una tarea
+  //  para eliminar una tarea
   async deleteTask(req: Request, res: Response) {
     const { id } = req.params;
     await this.taskService.deleteTask(id);
@@ -63,7 +63,7 @@ export class TaskController {
     res.json({ message: 'Task deleted successfully' });
   }
 
-  // Ruta para asignar una tarea a un usuario específico
+  //  para asignar una tarea a un usuario específico
   async assignTask(
     req: Request,
     res: Response,
@@ -92,7 +92,36 @@ export class TaskController {
     }
   }
 
-  // Ruta para buscar tareas por nombre o descripcion
+  //  para desasignar una tarea a un usuario
+  async unassignTask(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { taskId } = req.params;
+      const { userId } = req.body;
+
+      if (!userId) {
+        res.status(400).json({ message: 'userId is required' });
+        return;
+      }
+
+      const updatedTask = await this.taskService.unassignUserFromTask(
+        taskId,
+        userId
+      );
+
+      res.json({
+        message: 'User unassigned successfully',
+        task: updatedTask,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  //  para buscar tareas por nombre o descripcion
   async searchTasks(
     req: Request,
     res: Response,
@@ -117,7 +146,7 @@ export class TaskController {
     }
   }
 
-  // Ruta para filtrar por estado de tareas
+  //  para filtrar por estado de tareas
   async getTasksByStatus(req: Request, res: Response) {
     const { status } = req.params;
     const tasks = await this.taskService.getTasksByStatus(status as TaskStatus);
