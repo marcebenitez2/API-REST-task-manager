@@ -10,28 +10,29 @@ import {
 const router = Router();
 const userController = new UserController();
 
+
 // Ruta para registrar un usuario
 router.post(
   '/register',
-  validateRequest(registerValidation), // Middleware para validar datos del registro
+  validateRequest(registerValidation), // Middleware to validate registration data
   (req, res, next) => userController.register(req, res).catch(next)
 );
 
-// Ruta para inicio de sesión
+// Ruta para iniciar sesión
 router.post(
   '/login',
-  validateRequest(loginValidation), // Middleware para validar datos del login
+  validateRequest(loginValidation), // Middleware to validate login data
   (req, res, next) => userController.login(req, res).catch(next)
 );
 
-// Ruta protegida: obtener perfil del usuario autenticado
+// Ruta para obtener el perfil del usuario autenticado
 router.get(
   '/profile',
-  authenticateToken, // Middleware para validar JWT
+  authenticateToken, // Middleware to validate JWT
   (req, res) => {
     res.json({
-      message: 'Perfil del usuario autenticado',
-      user: req.user, // Información del usuario añadida por el authMiddleware
+      message: 'Authenticated user profile',
+      user: req.user, // User information added by the authMiddleware
     });
   }
 );
@@ -44,3 +45,117 @@ router.post('/logout', authenticateToken, (req, res) => {
 });
 
 export default router;
+/**
+ * @openapi
+ * /users/register:
+ *  post:
+ *    summary: "Register a new user"
+ *    description: "Creates a new user in the api."
+ *    operationId: "registerUser"
+ *    tags:
+ *      - Users
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              username:
+ *                type: string
+ *              email:
+ *                type: string
+ *              password:
+ *                type: string
+ *            required:
+ *              - username
+ *              - email
+ *              - password
+ *    responses:
+ *      201:
+ *        description: "User created successfully."
+ *      400:
+ *        description: "Invalid request data, missing required fields or incorrect format."
+ */
+
+/**
+ * @openapi
+ * /users/login:
+ *  post:
+ *    summary: "Login a user"
+ *    description: "Logs in a user by validating their email and password."
+ *    operationId: "loginUser"
+ *    tags:
+ *      - Users
+ *    requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              email:
+ *                type: string
+ *              password:
+ *                type: string
+ *            required:
+ *              - email
+ *              - password
+ *    responses:
+ *      200:
+ *        description: "Login successful. Returns a JWT token for further authentication."
+ *      401:
+ *        description: "Invalid credentials. Either the email or password is incorrect."
+ */
+
+/**
+ * @openapi
+ * /users/profile:
+ *  get:
+ *    summary: "Get the authenticated user's profile"
+ *    description: "Returns the profile information of the currently authenticated user."
+ *    operationId: "getUserProfile"
+ *    tags:
+ *      - Users
+ *    security:
+ *      - bearerAuth: [] 
+ *    responses:
+ *      200:
+ *        description: "Authenticated user profile returned successfully."
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                user:
+ *                  type: object
+ *                  properties:
+ *                    id:
+ *                      type: string
+ *                    username:
+ *                      type: string
+ *                    email:
+ *                      type: string
+ *      401:
+ *        description: "Unauthorized access. Invalid or missing JWT."
+ */
+
+/**
+ * @openapi
+ * /users/logout:
+ *  post:
+ *    summary: "Logout a user"
+ *    description: "Simulates the logout action, typically clearing the session on the client side."
+ *    operationId: "logoutUser"
+ *    tags:
+ *      - Users
+ *    security:
+ *      - bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: "Successfully logged out. Simulated session closure."
+ *      401:
+ *        description: "Unauthorized access. Invalid or missing JWT."
+ */
+
+

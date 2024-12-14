@@ -69,7 +69,14 @@ const initializeRoutes = (app: Application): void => {
 };
 
 const setupSwagger = (app: Application): void => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  try {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+      explorer: true
+    }));
+    console.log('Swagger UI initialized successfully');
+  } catch (error) {
+    console.error('Error initializing Swagger UI:', error);
+  }
 };
 
 const initializeErrorHandling = (app: Application): void => {
