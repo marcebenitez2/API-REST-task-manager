@@ -2,12 +2,10 @@ import Joi from 'joi';
 
 export const registerValidation = Joi.object({
   username: Joi.string()
-    .alphanum()
     .min(3)
     .max(30)
     .required()
     .messages({
-      'string.alphanum': 'Username must only contain alphanumeric characters',
       'string.min': 'Username must be at least 3 characters long',
       'string.max': 'Username cannot be longer than 30 characters',
       'any.required': 'Username is required'
@@ -22,10 +20,10 @@ export const registerValidation = Joi.object({
     }),
   
   password: Joi.string()
-    .pattern(new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$'))
+    .min(8)
     .required()
     .messages({
-      'string.pattern.base': 'Password must be at least 8 characters long and contain at least one letter and one number',
+      'string.min': 'Password must be at least 8 characters long',
       'any.required': 'Password is required'
     })
 });
