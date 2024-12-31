@@ -17,7 +17,7 @@ router.post(
 
 // Ruta para obtener todos los proyectos
 router.get('/all', authenticateToken, (req, res, next) =>
-  projectController.getProjects(req, res).catch(next)
+  projectController.getProjectsAll(req, res).catch(next)
 );
 
 // Ruta para obtener los proyectos de un usuario

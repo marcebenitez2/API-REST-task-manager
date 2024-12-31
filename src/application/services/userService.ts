@@ -13,12 +13,14 @@ export class UserService {
   }
 
   async register(userData: {
-    username: string,
-    email: string,
-    password: string
-  }): Promise<IUser> {
+    username: string;
+    email: string;
+    password: string;
+  }): Promise<{ user: IUser; token: string }> {
     // Verificar si el usuario o email ya existen
-    const existingUsername = await this.userRepository.findByUsername(userData.username);
+    const existingUsername = await this.userRepository.findByUsername(
+      userData.username
+    );
     const existingEmail = await this.userRepository.findByEmail(userData.email);
 
     if (existingUsername) {
@@ -29,21 +31,25 @@ export class UserService {
       throw new CustomError('Email already exists', 400);
     }
 
-    // Hashear contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userData.password, salt);
 
-    // Crear usuario
-    return this.userRepository.create({
+    const user = await this.userRepository.create({
       ...userData,
-      password: hashedPassword
+      password: hashedPassword,
     });
+
+    const token = jwt.sign({ id: user._id }, env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    return { user, token };
   }
 
   async login(credentials: {
-    email: string,
-    password: string
-  }): Promise<{ user: IUser, token: string }> {
+    email: string;
+    password: string;
+  }): Promise<{ user: IUser; token: string }> {
     const user = await this.userRepository.findByEmail(credentials.email);
 
     if (!user) {
@@ -57,12 +63,15 @@ export class UserService {
     }
 
     // Generar token
-    const token = jwt.sign(
-      { id: user._id },
-      env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const token = jwt.sign({ id: user._id }, env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
 
     return { user, token };
+  }
+
+  async getAll() {
+    const users = await this.userRepository.findAll();
+    return users;
   }
 }

@@ -28,20 +28,20 @@ export class ProjectService {
 
   // Obtener TODOS los proyectos
   async getProjectsAll(): Promise<IProject[]> {
-    const cacheKey = 'allProjects';
-    const cachedProjects = cache.get(cacheKey); // Intenta obtener los proyectos del cache
+    // const cacheKey = 'allProjects';
+    // const cachedProjects = cache.get(cacheKey); // Intenta obtener los proyectos del cache
 
-    // Si el valor en cache es válido y es un arreglo de proyectos
-    if (Array.isArray(cachedProjects)) {
-      console.log('Returning cached projects');
-      return cachedProjects; // Si están en caché, devuelve los datos
-    }
+    // // Si el valor en cache es válido y es un arreglo de proyectos
+    // if (Array.isArray(cachedProjects)) {
+    //   console.log('Returning cached projects');
+    //   return cachedProjects; // Si están en caché, devuelve los datos
+    // }
 
     // Si no están en caché, consulta a la base de datos
     const projects = await this.projectRepository.findAll();
 
     // Almacena el resultado en caché
-    cache.set(cacheKey, projects);
+    // cache.set(cacheKey, projects);
 
     return projects;
   }

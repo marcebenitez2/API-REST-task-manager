@@ -10,7 +10,6 @@ import {
 const router = Router();
 const userController = new UserController();
 
-
 // Ruta para registrar un usuario
 router.post(
   '/register',
@@ -43,6 +42,11 @@ router.post('/logout', authenticateToken, (req, res) => {
     message: 'Simulation of session closing completed.',
   });
 });
+
+// Ruta para traer todos los usuarios
+router.get('/all', authenticateToken, (req, res, next) =>
+  userController.getAll(req, res).catch(next)
+);
 
 export default router;
 /**
@@ -116,7 +120,7 @@ export default router;
  *    tags:
  *      - Users
  *    security:
- *      - bearerAuth: [] 
+ *      - bearerAuth: []
  *    responses:
  *      200:
  *        description: "Authenticated user profile returned successfully."
@@ -142,20 +146,33 @@ export default router;
 
 /**
  * @openapi
- * /users/logout:
- *  post:
- *    summary: "Logout a user"
- *    description: "Simulates the logout action, typically clearing the session on the client side."
- *    operationId: "logoutUser"
+ * /users/all:
+ *  get:
+ *    summary: "Get all users"
+ *    description: "Returns a list of all users in the system. Requires authentication."
+ *    operationId: "getAllUsers"
  *    tags:
  *      - Users
  *    security:
  *      - bearerAuth: []
  *    responses:
  *      200:
- *        description: "Successfully logged out. Simulated session closure."
+ *        description: "List of users retrieved successfully."
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    type: string
+ *                  username:
+ *                    type: string
+ *                  email:
+ *                    type: string
  *      401:
  *        description: "Unauthorized access. Invalid or missing JWT."
+ *      500:
+ *        description: "Internal server error."
  */
-
-

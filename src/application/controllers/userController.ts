@@ -1,10 +1,5 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
-import { validateRequest } from '../../infrastructure/server/express/middleware/ValidationMiddleware';
-import {
-  registerValidation,
-  loginValidation,
-} from '../validations/userValidation';
 
 export class UserController {
   private userService: UserService;
@@ -13,15 +8,17 @@ export class UserController {
     this.userService = new UserService();
   }
 
+  // En UserController
   async register(req: Request, res: Response) {
-    const userData = await this.userService.register(req.body);
+    const { user, token } = await this.userService.register(req.body);
     res.status(201).json({
       message: 'User registered successfully',
       user: {
-        id: userData._id,
-        username: userData.username,
-        email: userData.email,
+        id: user._id,
+        username: user.username,
+        email: user.email,
       },
+      token,
     });
   }
 
@@ -36,5 +33,10 @@ export class UserController {
         email: user.email,
       },
     });
+  }
+
+  async getAll(req: Request, res: Response) {
+    const users = await this.userService.getAll();
+    res.json(users);
   }
 }

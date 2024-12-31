@@ -33,42 +33,42 @@ export class TaskService {
   // Traer todas las tareas
   async getAllTasks(): Promise<ITask[]> {
     // Verificar en caché
-    const cachedTasks = cache.get<ITask[]>('allTasks');
-    if (cachedTasks) {
-      console.log('Returning cached tasks');
-      return cachedTasks; // Devuelve las tareas desde el caché
-    }
+    // const cachedTasks = cache.get<ITask[]>('allTasks');
+    // if (cachedTasks) {
+    //   console.log('Returning cached tasks');
+    //   return cachedTasks; // Devuelve las tareas desde el caché
+    // }
 
     const tasks = await this.taskRepository.findAll();
-    cache.set('allTasks', tasks); // Almacenar en caché
+    // cache.set('allTasks', tasks); // Almacenar en caché
     return tasks;
   }
 
   // Traer todas las tareas de un usuario
   async getTasksByUser(userId: string): Promise<ITask[]> {
-    const cacheKey = `tasksByUser:${userId}`;
-    const cachedTasks = cache.get<ITask[]>(cacheKey);
-    if (cachedTasks) {
-      console.log('Returning cached user tasks');
-      return cachedTasks; // Devuelve las tareas de usuario desde el caché
-    }
+    // const cacheKey = `tasksByUser:${userId}`;
+    // const cachedTasks = cache.get<ITask[]>(cacheKey);
+    // if (cachedTasks) {
+    //   console.log('Returning cached user tasks');
+    //   return cachedTasks; // Devuelve las tareas de usuario desde el caché
+    // }
 
     const tasks = await this.taskRepository.findTasksByUser(userId);
-    cache.set(cacheKey, tasks); // Almacenar en caché
+    // cache.set(cacheKey, tasks); // Almacenar en caché
     return tasks;
   }
 
   // Traer todas las tareas de un proyecto
   async getTasksByProject(projectId: string): Promise<ITask[]> {
-    const cacheKey = `tasksByProject:${projectId}`;
-    const cachedTasks = cache.get<ITask[]>(cacheKey);
-    if (cachedTasks) {
-      console.log('Returning cached project tasks');
-      return cachedTasks; // Devuelve las tareas de proyecto desde el caché
-    }
+    // const cacheKey = `tasksByProject:${projectId}`;
+    // const cachedTasks = cache.get<ITask[]>(cacheKey);
+    // if (cachedTasks) {
+    //   console.log('Returning cached project tasks');
+    //   return cachedTasks; // Devuelve las tareas de proyecto desde el caché
+    // }
 
     const tasks = await this.taskRepository.findTasksByProject(projectId);
-    cache.set(cacheKey, tasks); // Almacenar en caché
+    // cache.set(cacheKey, tasks); // Almacenar en caché
     return tasks;
   }
 
