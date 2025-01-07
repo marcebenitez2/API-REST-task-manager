@@ -13,28 +13,22 @@ const userController = new UserController();
 // Ruta para registrar un usuario
 router.post(
   '/register',
-  validateRequest(registerValidation), // Middleware to validate registration data
+  validateRequest(registerValidation),
   (req, res, next) => userController.register(req, res).catch(next)
 );
 
 // Ruta para iniciar sesión
-router.post(
-  '/login',
-  validateRequest(loginValidation), // Middleware to validate login data
-  (req, res, next) => userController.login(req, res).catch(next)
+router.post('/login', validateRequest(loginValidation), (req, res, next) =>
+  userController.login(req, res).catch(next)
 );
 
 // Ruta para obtener el perfil del usuario autenticado
-router.get(
-  '/profile',
-  authenticateToken, // Middleware to validate JWT
-  (req, res) => {
-    res.json({
-      message: 'Authenticated user profile',
-      user: req.user, // User information added by the authMiddleware
-    });
-  }
-);
+router.get('/profile', authenticateToken, (req, res) => {
+  res.json({
+    message: 'Authenticated user profile',
+    user: req.user, // User information added by the authMiddleware
+  });
+});
 
 // Ruta para cerrar sesión
 router.post('/logout', authenticateToken, (req, res) => {
