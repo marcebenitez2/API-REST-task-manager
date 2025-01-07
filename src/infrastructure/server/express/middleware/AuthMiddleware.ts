@@ -37,8 +37,3 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const isOwnerOrMember = async (req: Request, res: Response, next: NextFunction) => {
-  // Este middleware requerirá lógica adicional para verificar 
-  // si el usuario es propietario o miembro del proyecto/tarea
-  // Lo implementaremos más adelante con los controladores
-};

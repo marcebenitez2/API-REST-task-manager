@@ -26,7 +26,7 @@ router.post('/login', validateRequest(loginValidation), (req, res, next) =>
 router.get('/profile', authenticateToken, (req, res) => {
   res.json({
     message: 'Authenticated user profile',
-    user: req.user, // User information added by the authMiddleware
+    user: req.user,
   });
 });
 
